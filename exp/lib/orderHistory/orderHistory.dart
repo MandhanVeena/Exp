@@ -87,7 +87,7 @@ class OrderHistoryItem extends StatelessWidget {
                   Divider(),
                   Row(
                     children: [
-                      Text("Order placed on "),
+                      Text("Order placed on  "),
                       Text(
                         getFormattedDateYearOrNot(orderModel.createDate, "d M"),
                         style: TextStyle(fontWeight: FontWeight.bold),
