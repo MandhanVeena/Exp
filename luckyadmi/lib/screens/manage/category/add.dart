@@ -93,6 +93,40 @@ class _AddCategoryState extends State<AddCategory> {
     return filePath;
   }
 
+  Future _selectedImage() async {
+    final pickedFile =
+        await FilePicker.platform.pickFiles(allowMultiple: false);
+    if (pickedFile != null) {
+      File compressedImage = await FlutterNativeImage.compressImage(
+          pickedFile.files.single.path,
+          quality: 50);
+
+      setState(() {
+        image = compressedImage;
+      });
+    } else {
+      print("");
+    }
+  }
+
+  Widget _displayChild() {
+    if (image == null) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(14, 30, 14, 30),
+        child: Icon(
+          Icons.add,
+          color: Colors.grey,
+        ),
+      );
+    } else {
+      return Image.file(
+        image,
+        fit: BoxFit.cover,
+        width: double.infinity,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,7 +138,7 @@ class _AddCategoryState extends State<AddCategory> {
           color: Colors.black,
         ),
         title: Text(
-          "Add Category",
+          categoryId == '' ? 'Add Category' : 'Update Category',
           style: TextStyle(color: Colors.black),
         ),
       ),
@@ -174,71 +208,80 @@ class _AddCategoryState extends State<AddCategory> {
     );
   }
 
+  deleteCategoryWithImage() {
+    _categoryService.deleteImage(widget.categorySelected.image);
+    _categoryService.deleteCategory(widget.categorySelected.catId);
+  }
+
+  deleteWidget() {
+    if (categoryId != "") {
+      return FlatButton(
+        onPressed: () {
+          setState(() {
+            isLoading = true;
+          });
+          deleteCategoryWithImage();
+          Fluttertoast.showToast(msg: 'Category deleted');
+          _formKey.currentState.reset();
+          setState(() {
+            isLoading = false;
+            widget.refresh();
+            Navigator.pop(context);
+          });
+        },
+        child: Text('Delete'),
+        color: Colors.grey.withOpacity(0.3),
+        textColor: Colors.black,
+      );
+    }
+  }
+
   void validateAndUpload() async {
     if (_formKey.currentState.validate() && image != null) {
       setState(() {
         isLoading = true;
       });
 
-      String imageUrl;
+      if (image != null) {
+        if (categoryId != "") {
+          deleteCategoryWithImage();
+        }
 
-      final String picture =
-          "${categoryNameController.text}${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
+        String imageUrl;
+        final String picture =
+            "${categoryNameController.text}${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
+        UploadTask task = storage.ref().child(picture).putFile(image);
 
-      UploadTask task = storage.ref().child(picture).putFile(image);
+        if (task != null) {
+          final snapshot = await task.whenComplete(() {});
+          imageUrl = await snapshot.ref.getDownloadURL();
+        }
 
-      if (task != null) {
-        final snapshot = await task.whenComplete(() {});
-        imageUrl = await snapshot.ref.getDownloadURL();
+        _categoryService.createCategory(categoryNameController.text, imageUrl,
+            double.parse(priorityController.text));
+
+        _formKey.currentState.reset();
+        setState(() {
+          isLoading = false;
+          //widget.refresh();
+
+          if (categoryId != "") {
+            widget.refresh();
+          }
+          Navigator.pop(context);
+        });
+        Fluttertoast.showToast(
+            msg: categoryId == '' ? 'Category added' : 'Category updated');
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        Fluttertoast.showToast(msg: "Add atleast 1 image");
       }
-
-      _categoryService.createCategory(categoryNameController.text, imageUrl,
-          double.parse(priorityController.text));
-      _formKey.currentState.reset();
-      setState(() {
-        isLoading = false;
-        //widget.refresh();
-        Navigator.pop(context);
-      });
-      Fluttertoast.showToast(msg: 'Category added');
     } else {
       setState(() {
         isLoading = false;
       });
-    }
-  }
-
-  Future _selectedImage() async {
-    final pickedFile =
-        await FilePicker.platform.pickFiles(allowMultiple: false);
-    if (pickedFile != null) {
-      File compressedImage = await FlutterNativeImage.compressImage(
-          pickedFile.files.single.path,
-          quality: 50);
-
-      setState(() {
-        image = compressedImage;
-      });
-    } else {
-      print("");
-    }
-  }
-
-  Widget _displayChild() {
-    if (image == null) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(14, 30, 14, 30),
-        child: Icon(
-          Icons.add,
-          color: Colors.grey,
-        ),
-      );
-    } else {
-      return Image.file(
-        image,
-        fit: BoxFit.cover,
-        width: double.infinity,
-      );
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
@@ -45,4 +46,15 @@ class CategoryService {
           .then((snap) {
         return snap.docs;
       });
+
+  deleteImage(String url) async {
+    Reference reference = FirebaseStorage.instance.refFromURL(url);
+    await reference.delete().then((value) => {
+      print("Deleted")
+    });
+  }
+
+  deleteCategory(String categoryId) async {
+    await _firestore.collection(ref).doc(categoryId).delete();
+  }
 }

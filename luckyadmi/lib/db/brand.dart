@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
@@ -22,6 +23,32 @@ class BrandService {
       _firestore.collection(ref).get().then((snaps) {
         return snaps.docs;
       });
+
+  Future getBrands1() async {
+    List brands = [];
+    try {
+      await _firestore
+          .collection(ref)
+          .get()
+          .then((value) => value.docs.forEach((element) {
+                brands.add(element.data());
+              }));
+      return brands;
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  deleteImage(String url) async {
+    Reference reference = FirebaseStorage.instance.refFromURL(url);
+    await reference.delete().then((value) => {
+      print("Deleted")
+    });
+  }
+
+  deleteBrand(String brandId) async {
+    await _firestore.collection(ref).doc(brandId).delete();
+  }
 
   /*Future<List<DocumentSnapshot>> getSuggestions(String suggestion) => _firestore
           .collection(ref)
