@@ -1,14 +1,14 @@
 import 'package:luckyadmi/db/brand.dart';
 
 class BrandModel {
-  String catId;
-  String catName;
+  String brandId;
+  String brandName;
   String image;
   double priority;
 
   BrandModel(
-      this.catId,
-      this.catName,
+      this.brandId,
+      this.brandName,
       this.image,
       this.priority);
 }
@@ -18,8 +18,8 @@ List<BrandModel> convertMapToBrand(List brands) {
   for (var item in brands) {
     finalBrands.add(
       BrandModel(
-          item['catId'],
-          item['catName'],
+          item['brandId'],
+          item['brandName'],
           item['image'],
           item['priority']),
     );

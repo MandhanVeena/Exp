@@ -51,8 +51,8 @@ class _AddBrandState extends State<AddBrand> {
 
   setBrand() async {
     if (widget.brandSelected != null) {
-      brandId = widget.brandSelected.catId ?? '';
-      brandNameController.text = widget.brandSelected.catName;
+      brandId = widget.brandSelected.brandId ?? '';
+      brandNameController.text = widget.brandSelected.brandName;
 
       if (widget.brandSelected.priority.toString() != "null") {
         priorityController.text = widget.brandSelected.priority.toString();
@@ -197,7 +197,9 @@ class _AddBrandState extends State<AddBrand> {
                       onPressed: () {
                         validateAndUpload();
                       },
-                      child: Text('Add Brand'),
+                     child: Text(brandId == ''
+                              ? 'Add Brand'
+                              : 'Update Brand'),
                       color: Colors.red,
                       textColor: Colors.white,
                     ),
@@ -210,7 +212,7 @@ class _AddBrandState extends State<AddBrand> {
 
   deleteBrandWithImage() {
     _brandService.deleteImage(widget.brandSelected.image);
-    _brandService.deleteBrand(widget.brandSelected.catId);
+    _brandService.deleteBrand(widget.brandSelected.brandId);
   }
 
   deleteWidget() {
@@ -237,7 +239,7 @@ class _AddBrandState extends State<AddBrand> {
   }
 
   void validateAndUpload() async {
-    if (_formKey.currentState.validate() && image != null) {
+    if (_formKey.currentState.validate()) {
       setState(() {
         isLoading = true;
       });
@@ -276,7 +278,7 @@ class _AddBrandState extends State<AddBrand> {
         setState(() {
           isLoading = false;
         });
-        Fluttertoast.showToast(msg: "Add atleast 1 image");
+        Fluttertoast.showToast(msg: "Add brand image");
       }
     } else {
       setState(() {

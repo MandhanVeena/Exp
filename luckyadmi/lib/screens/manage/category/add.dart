@@ -197,7 +197,9 @@ class _AddCategoryState extends State<AddCategory> {
                       onPressed: () {
                         validateAndUpload();
                       },
-                      child: Text('Add Category'),
+                      child: Text(categoryId == ''
+                          ? 'Add Category'
+                          : 'Update Category'),
                       color: Colors.red,
                       textColor: Colors.white,
                     ),
@@ -237,11 +239,10 @@ class _AddCategoryState extends State<AddCategory> {
   }
 
   void validateAndUpload() async {
-    if (_formKey.currentState.validate() && image != null) {
+    if (_formKey.currentState.validate()) {
       setState(() {
         isLoading = true;
       });
-
       if (image != null) {
         if (categoryId != "") {
           deleteCategoryWithImage();
@@ -276,7 +277,7 @@ class _AddCategoryState extends State<AddCategory> {
         setState(() {
           isLoading = false;
         });
-        Fluttertoast.showToast(msg: "Add atleast 1 image");
+        Fluttertoast.showToast(msg: "Add category image");
       }
     } else {
       setState(() {

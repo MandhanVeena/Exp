@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:luckyadmi/model/productModel.dart';
 import 'package:luckyadmi/model/productStore.dart';
 import 'package:luckyadmi/screens/manage/brand/add.dart';
+import 'package:luckyadmi/screens/manage/brand/list.dart';
 import 'package:luckyadmi/screens/manage/category/add.dart';
 import 'package:luckyadmi/screens/manage/category/list.dart';
 import 'package:luckyadmi/screens/manage/product/add.dart';
@@ -34,7 +35,7 @@ class Manage extends StatelessWidget {
             listname: "Brand",
             icon: Icons.library_books,
             widget1: AddBrand(),
-            widget2: AddBrand()),
+            widget2: BrandList()),
         Divider(),
         ListTile(
           leading: Icon(Icons.people),

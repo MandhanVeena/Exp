@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:luckyadmi/db/userServices.dart';
+import 'package:luckyadmi/model/userModel.dart';
 
 class UsersList extends StatefulWidget {
   @override
@@ -7,9 +9,8 @@ class UsersList extends StatefulWidget {
 }
 
 class _UsersListState extends State<UsersList> {
-  List usersList = [];
-  List displayedUsers = [];
-
+  List<UserModel> usersList = [];
+  List<UserModel> displayedUsers = [];
   @override
   void initState() {
     super.initState();
@@ -17,21 +18,12 @@ class _UsersListState extends State<UsersList> {
   }
 
   getUsers() async {
-    List users = [];
-    try {
-      await FirebaseFirestore.instance
-          .collection("users")
-          .get()
-          .then((value) => value.docs.forEach((element) {
-                users.add(element.data());
-              }));
-      setState(() {
-        usersList = users;
-        displayedUsers = users;
-      });
-    } catch (e) {
-      print(e.toString());
-    }
+    var users = await UserHelper.getUsers();
+    setState(() {
+      usersList = users;
+      displayedUsers = users;
+      print(users);
+    });
   }
 
   @override
@@ -50,12 +42,11 @@ class _UsersListState extends State<UsersList> {
           ),
         ),
         body: ListView.builder(
-      itemBuilder: (context, index) {
-        return index == 0 ? _searchBar() : _listItem(index - 1);
-      },
-      itemCount: displayedUsers.length + 1,
-    )
-    );
+          itemBuilder: (context, index) {
+            return index == 0 ? _searchBar() : _listItem(index - 1);
+          },
+          itemCount: displayedUsers.length + 1,
+        ));
   }
 
   _searchBar() {
@@ -67,7 +58,7 @@ class _UsersListState extends State<UsersList> {
           text = text.toLowerCase();
           setState(() {
             displayedUsers = usersList.where((user) {
-              var name = user["email"].toString().toLowerCase();
+              var name = user.username.toString().toLowerCase();
               return name.contains(text);
             }).toList();
           });
@@ -84,7 +75,7 @@ class _UsersListState extends State<UsersList> {
             Padding(
               padding: const EdgeInsets.all(15.0),
               child: Text(
-                displayedUsers[index]["email"],
+                displayedUsers[index].username,
                 style: TextStyle(fontSize: 17),
               ),
             ),

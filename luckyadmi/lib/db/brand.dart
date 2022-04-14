@@ -16,7 +16,7 @@ class BrandService {
     _firestore
         .collection(ref)
         .doc(brandId)
-        .set({'brandName': name, 'image': image, 'priority': priority});
+        .set({'brandId': brandId,'brandName': name, 'image': image, 'priority': priority});
   }
 
   Future<List<DocumentSnapshot>> getBrands() =>
@@ -33,6 +33,7 @@ class BrandService {
           .then((value) => value.docs.forEach((element) {
                 brands.add(element.data());
               }));
+      print(brands);
       return brands;
     } catch (e) {
       print(e.toString());
@@ -41,9 +42,7 @@ class BrandService {
 
   deleteImage(String url) async {
     Reference reference = FirebaseStorage.instance.refFromURL(url);
-    await reference.delete().then((value) => {
-      print("Deleted")
-    });
+    await reference.delete().then((value) => {print("Deleted")});
   }
 
   deleteBrand(String brandId) async {

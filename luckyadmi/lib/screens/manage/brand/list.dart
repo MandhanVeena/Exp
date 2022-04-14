@@ -67,7 +67,7 @@ class _ListPageState extends State<ListPage> {
           text = text.toLowerCase();
           setState(() {
             displayedCategories = brandList.where((brand) {
-              var name = brand.catName.toString().toLowerCase();
+              var name = brand.brandName.toString().toLowerCase();
               return name.contains(text);
             }).toList();
           });
@@ -84,7 +84,7 @@ class _ListPageState extends State<ListPage> {
             Padding(
               padding: const EdgeInsets.all(15.0),
               child: Text(
-                displayedCategories[index].catName,
+                displayedCategories[index].brandName,
                 style: TextStyle(fontSize: 17),
               ),
             ),
